@@ -91,7 +91,8 @@ bool oled_task_user(void) {
     } else if (next == IDLE) {
         oled_write_raw_P(idle[current_idle_frame++], ANIM_SIZE);
         if (current_idle_frame >= 3) current_idle_frame = 0;
-        tp = timer_read32();
+        next = COOLDOWN;
+        tp   = timer_read32();
     } else if (next == COOLDOWN && timer_elapsed32(tp) > 200) {
         next = IDLE;
     }
