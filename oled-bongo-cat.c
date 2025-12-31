@@ -96,9 +96,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 bool oled_task_user(void) {
+#ifdef SPLIT_KEYBOARD
     if (!is_keyboard_master()) {
         return false;
     }
+#endif
 
     enum { IDLE, POST_TAP, SLEEP, DO_NOTHING };
     static uint8_t next = IDLE;
@@ -123,9 +125,9 @@ bool oled_task_user(void) {
         ++idle_cnt;
         next = DO_NOTHING;
         tp   = timer_read32();
-    }
+
 #ifdef OLED_DISABLE_TIMEOUT
-    else if (next == SLEEP) {
+    } else if (next == SLEEP) {
         oled_write_raw_P(bongo_sleep, ANIM_SIZE);
         ++idle_cnt;
         next = DO_NOTHING;
@@ -133,7 +135,7 @@ bool oled_task_user(void) {
         next = SLEEP;
     } else if (next == DO_NOTHING && idle_cnt < max_idle_cnt && timer_elapsed32(tp) > FRAME_PERIOD) {
 #else
-    else if (next == DO_NOTHING && timer_elapsed32(tp) > FRAME_PERIOD) {
+    } else if (next == DO_NOTHING && timer_elapsed32(tp) > FRAME_PERIOD) {
         (void)max_idle_cnt;
 #endif
         next = IDLE;
